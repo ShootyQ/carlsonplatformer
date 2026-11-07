@@ -1,0 +1,7 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {footAt,rigPose,THIGH,SHIN,STRIDE} from './run-rig.js';
+const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+test('legs and arms keep their lengths throughout the entire continuous stride',()=>{for(let i=0;i<=500;i++){const p=rigPose(i/500);for(const l of [p.near,p.far]){assert.ok(Math.abs(distance(l.hip,l.knee)-THIGH)<1e-7);assert.ok(Math.abs(distance(l.knee,l.ankle)-SHIN)<1e-7);assert.ok(l.knee.x>l.hip.x-42);}for(const a of [p.nearArm,p.farArm]){assert.ok(Math.abs(distance(a.shoulder,a.elbow)-26)<1e-7);assert.ok(Math.abs(distance(a.elbow,a.hand)-24)<1e-7);}}});
+test('stance foot cancels world movement and stays on ground',()=>{for(let t=.01;t<.39;t+=.01){const a=footAt(t),b=footAt(t+.001);assert.equal(a.y,-10);assert.equal(a.angle,0);assert.ok(Math.abs((b.x-a.x)/.001+STRIDE)<1e-7);}});
+test('foot path and velocity are continuous at lift, landing and loop',()=>{for(const t of [0,.4,1]){const a=footAt(t-1e-5),b=footAt(t),c=footAt(t+1e-5);assert.ok(distance(a,b)<.01);assert.ok(distance(b,c)<.01);assert.ok(Math.abs((b.x-a.x)/1e-5-(c.x-b.x)/1e-5)<.1);assert.ok(Math.abs((b.y-a.y)/1e-5-(c.y-b.y)/1e-5)<.1);}});
+test('legs alternate with half-cycle offset and return above ground',()=>{for(let t=0;t<1;t+=.02){const p=rigPose(t),next=rigPose(t+.5);assert.ok(distance(p.near.ankle,next.far.ankle)<1e-8);assert.ok(p.near.ankle.y<=-10);}assert.ok(footAt(.7).y<-45);});

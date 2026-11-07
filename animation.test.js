@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {placement,registration,advanceAnimation,pose,layouts} from './animation.js';
+import {placement,registration,advanceAnimation,pose} from './animation.js';
 import {player} from './physics.js';
 test('all poses preserve head scale and put measured soles at the physics anchor',()=>{
  for(const [name,frames] of Object.entries(registration)) for(let f=0;f<frames.length;f++){
@@ -24,11 +24,4 @@ test('crouch walking face and total height do not grow versus held crouch',()=>{
  }
 });
 
-test('run samples all twelve chronological drawings and wraps without skipping',()=>{
- const p=player();p.vx=280;const seen=[];
- for(let i=0;i<12;i++)seen.push(pose({crouch:0,stride:(i+.5)/12},p).frame);
- assert.deepEqual(seen,Array.from({length:12},(_,i)=>i));
- assert.equal(layouts.run.count,registration.run.length);
- const a={crouch:0,stride:.999};advanceAnimation(a,p,.01);
- assert.ok(a.stride>=0&&a.stride<1);assert.ok(pose(a,p).frame<12);
-});
+test('grounded run selects the continuous rig; crouch and jump keep sprite poses',()=>{const p=player(),a={crouch:0,stride:.13};p.vx=280;assert.equal(pose(a,p).name,'run');p.grounded=false;assert.equal(pose(a,p).name,'jump');p.grounded=true;p.crouch=true;a.crouch=1;assert.equal(pose(a,p).name,'crouch-walk');p.vx=0;assert.equal(pose(a,p).name,'crouch');});

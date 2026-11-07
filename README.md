@@ -28,3 +28,9 @@ The bottom-center label shows the loaded game version. Entry scripts, imported m
 ## Release 0.3.1
 
 Running now uses twelve newly drawn chronological poses (four columns, three rows), with intermediate knee bend and leg-swing poses. The cycle still follows distance traveled; the twelve-frame run uses independent frame layout and registration so crouch and jump sheets retain their scale.
+
+## Release 0.4.0
+
+The run uses separate painted body, arm, leg, and shoe pieces in `assets/run-rig.png`, animated continuously by `run-rig.js`. Two-bone leg solving keeps thigh and shin lengths fixed. The planted foot moves backward at the same rate as the character moves forward, with a smooth lifted return arc. Arms alternate opposite the legs. Jump, landing, crouch and crouch-walk artwork and registration are preserved.
+
+Open `run-preview.html` for an enlarged loop with pause, speed and facing controls. The game loads the same rig.

@@ -1,6 +1,7 @@
-import { step, player, FLOOR } from './physics.js?v=0.3.1';
-import { placement, advanceAnimation, pose, layouts } from './animation.js?v=0.3.1';
-const VERSION = '0.3.1';
+import { drawRun } from './run-rig.js?v=0.4.0';
+import { step, player, FLOOR } from './physics.js?v=0.4.0';
+import { placement, advanceAnimation, pose, layouts } from './animation.js?v=0.4.0';
+const VERSION = '0.4.0';
 document.querySelector('#version').textContent = `v${VERSION}`;
 const animation = { crouch:0, stride:0 };
 const canvas=document.querySelector('canvas'), ctx=canvas.getContext('2d');
@@ -31,9 +32,10 @@ function draw(){ctx.setTransform(canvas.width/viewWidth,0,0,canvas.height/600,0,
  ctx.fillStyle='#80b963';ctx.fillRect(0,FLOOR,viewWidth,90);ctx.fillStyle='#b58a58';ctx.fillRect(0,FLOOR+15,viewWidth,85);ctx.fillStyle='#76ac50';ctx.fillRect(0,FLOOR,viewWidth,16);
  for(let i=Math.floor(camera/26);i<(camera+viewWidth)/26+1;i++){const x=i*26-camera;ctx.strokeStyle='#548f40';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,FLOOR+5);ctx.lineTo(x-3,FLOOR-4-(i%3)*2);ctx.moveTo(x,FLOOR+5);ctx.lineTo(x+4,FLOOR-2);ctx.stroke();if(i%7===0){ctx.fillStyle=i%2?'#fff4c7':'#f4b9a7';ctx.beginPath();ctx.arc(x+4,FLOOR-7,3,0,Math.PI*2);ctx.fill();}}
  const {name,frame}=pose(animation,p);
+ if(name==='run' && sheets.rig){drawRun(ctx,sheets.rig,p.x-camera,p.y,p.facing,animation.stride);return;}
  const im=sheets[name];if(im){const layout=layouts[name];const sw=im.width/layout.columns,sh=im.height/layout.rows;const box=placement(name,frame,sw,sh);ctx.save();ctx.translate(p.x-camera,p.y);ctx.scale(p.facing,1);ctx.drawImage(im,(frame%layout.columns)*sw,Math.floor(frame/layout.columns)*sh,sw,sh,box.x,box.y,box.width,box.height);ctx.restore();}
 
 }
 function loop(t){const dt=last?Math.min((t-last)/1000,.1):0;last=t;const landscape=innerWidth>innerHeight;if(running&&landscape&&!document.hidden){accumulator+=dt;while(accumulator>=1/120){step(p,inputs(),1/120);advanceAnimation(animation,p,1/120);time+=1/120;accumulator-=1/120;}}else accumulator=0;draw();requestAnimationFrame(loop);}
-Promise.all(['run','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name==='run'?'run-v3':name}.png?v=${VERSION}`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
+Promise.all(['rig','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name==='rig'?'run-rig':name}.png?v=${VERSION}`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
 requestAnimationFrame(loop);
