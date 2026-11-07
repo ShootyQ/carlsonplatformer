@@ -1,4 +1,6 @@
 import { step, player, FLOOR } from './physics.js';
+import { placement, advanceAnimation, pose } from './animation.js';
+const animation = { crouch:0, stride:0 };
 const canvas=document.querySelector('canvas'), ctx=canvas.getContext('2d');
 const start=document.querySelector('#start'), welcome=document.querySelector('#welcome');
 const sheets={}; const p=player(); let running=false,time=0,last=0,accumulator=0,viewWidth=1000;
@@ -26,9 +28,10 @@ function draw(){ctx.setTransform(canvas.width/viewWidth,0,0,canvas.height/600,0,
  for(let i=-1;i<12;i++){const x=i*400-camera*.35;ctx.fillStyle=i%2?'#a5cf93':'#b8dca5';ctx.beginPath();ctx.ellipse(x,520,330,150+(i%3)*24,0,Math.PI,0);ctx.fill();}
  ctx.fillStyle='#80b963';ctx.fillRect(0,FLOOR,viewWidth,90);ctx.fillStyle='#b58a58';ctx.fillRect(0,FLOOR+15,viewWidth,85);ctx.fillStyle='#76ac50';ctx.fillRect(0,FLOOR,viewWidth,16);
  for(let i=Math.floor(camera/26);i<(camera+viewWidth)/26+1;i++){const x=i*26-camera;ctx.strokeStyle='#548f40';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,FLOOR+5);ctx.lineTo(x-3,FLOOR-4-(i%3)*2);ctx.moveTo(x,FLOOR+5);ctx.lineTo(x+4,FLOOR-2);ctx.stroke();if(i%7===0){ctx.fillStyle=i%2?'#fff4c7':'#f4b9a7';ctx.beginPath();ctx.arc(x+4,FLOOR-7,3,0,Math.PI*2);ctx.fill();}}
- let name='crouch',frame=0;if(!p.grounded){name='jump';frame=p.vy < -220?2:p.vy<150?3:4;}else if(p.landing>0){name='jump';frame=p.landing>.08?6:7;}else if(p.crouch){name=p.vx?'crouch-walk':'crouch';frame=p.vx?Math.floor(time*8)%8:4;}else if(p.vx){name='run';frame=Math.floor(time*10)%8;}
- const im=sheets[name];if(im){const sw=im.width/4,sh=im.height/2;const h=196,w=sw/sh*h;ctx.save();ctx.translate(p.x-camera,p.y);ctx.scale(p.facing,1);ctx.drawImage(im,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,-w/2,-h,w,h);ctx.restore();}
+ const {name,frame}=pose(animation,p);
+ const im=sheets[name];if(im){const sw=im.width/4,sh=im.height/2;const box=placement(name,frame,sw,sh);ctx.save();ctx.translate(p.x-camera,p.y);ctx.scale(p.facing,1);ctx.drawImage(im,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,box.x,box.y,box.width,box.height);ctx.restore();}
+
 }
-function loop(t){const dt=last?Math.min((t-last)/1000,.1):0;last=t;const landscape=innerWidth>innerHeight;if(running&&landscape&&!document.hidden){accumulator+=dt;while(accumulator>=1/120){step(p,inputs(),1/120);time+=1/120;accumulator-=1/120;}}else accumulator=0;draw();requestAnimationFrame(loop);}
-Promise.all(['run','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name}.png`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
+function loop(t){const dt=last?Math.min((t-last)/1000,.1):0;last=t;const landscape=innerWidth>innerHeight;if(running&&landscape&&!document.hidden){accumulator+=dt;while(accumulator>=1/120){step(p,inputs(),1/120);advanceAnimation(animation,p,1/120);time+=1/120;accumulator-=1/120;}}else accumulator=0;draw();requestAnimationFrame(loop);}
+Promise.all(['run','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name==='run'?'run-v2':name}.png`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
 requestAnimationFrame(loop);
