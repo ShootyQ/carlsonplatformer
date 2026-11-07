@@ -24,3 +24,7 @@ Artwork is a generated first pass; some edge artifacts, repeated poses, and regi
 ## Release 0.3.0
 
 The bottom-center label shows the loaded game version. Entry scripts, imported modules, CSS, and artwork use versioned URLs to avoid mixing old and new releases. Crouch-walk registration matches held crouch using visible face features, and movement accelerates and decelerates rather than snapping to full speed.
+
+## Release 0.3.1
+
+Running now uses twelve newly drawn chronological poses (four columns, three rows), with intermediate knee bend and leg-swing poses. The cycle still follows distance traveled; the twelve-frame run uses independent frame layout and registration so crouch and jump sheets retain their scale.
