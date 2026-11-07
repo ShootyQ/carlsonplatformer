@@ -20,3 +20,7 @@ Hold the bottom-left buttons to move. Hold crouch on the right to crouch or snea
 In GitHub repository **Settings → Pages → Build and deployment**, select **GitHub Actions**. Push these files to `main`, or run the **Deploy game to GitHub Pages** workflow manually. The workflow runs physics tests and deploys only the static game files. No secrets or install step needed.
 
 Artwork is a generated first pass; some edge artifacts, repeated poses, and registration shifts remain. Source sprites are retained unchanged. Animation timing and physics are separate so sprite polish can follow without changing jump behavior.
+
+## Release 0.3.0
+
+The bottom-center label shows the loaded game version. Entry scripts, imported modules, CSS, and artwork use versioned URLs to avoid mixing old and new releases. Crouch-walk registration matches held crouch using visible face features, and movement accelerates and decelerates rather than snapping to full speed.

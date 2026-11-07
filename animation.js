@@ -1,10 +1,11 @@
 // Measurements are in source pixels, independent of sheet cell dimensions.
-// Crown-to-chin size stays 50 world units, including when knees are bent.
+// Calibrated across sheets using visible eye/face size, not cell height.
+// Match held crouch and crouch walking by their measured 12px near-eye feature.
 const rows = (heads, feet, centers) => heads.map((head, i) => ({ head, foot: feet[i], center: centers[i] }));
 export const registration = {
   run: rows([116,116,116,116,116,116,116,116], [433,433,433,433,429,432,432,430], Array(8).fill(225)),
   crouch: rows([128,128,130,132,138,136,130,128], [495,495,495,495,496,495,496,495], Array(8).fill(192)),
-  'crouch-walk': rows(Array(8).fill(136), [412,412,412,410,412,413,413,413], Array(8).fill(222)),
+  'crouch-walk': rows(Array(8).fill(138), [412,412,412,410,412,413,413,413], Array(8).fill(260)),
   // Airborne sprite elevation is supplied by physics, not baked into the cell.
   jump: rows([132,132,132,132,132,132,132,128], [486,485,434,400,474,496,496,496], Array(8).fill(192)),
 };

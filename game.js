@@ -1,5 +1,7 @@
-import { step, player, FLOOR } from './physics.js';
-import { placement, advanceAnimation, pose } from './animation.js';
+import { step, player, FLOOR } from './physics.js?v=0.3.0';
+import { placement, advanceAnimation, pose } from './animation.js?v=0.3.0';
+const VERSION = '0.3.0';
+document.querySelector('#version').textContent = `v${VERSION}`;
 const animation = { crouch:0, stride:0 };
 const canvas=document.querySelector('canvas'), ctx=canvas.getContext('2d');
 const start=document.querySelector('#start'), welcome=document.querySelector('#welcome');
@@ -33,5 +35,5 @@ function draw(){ctx.setTransform(canvas.width/viewWidth,0,0,canvas.height/600,0,
 
 }
 function loop(t){const dt=last?Math.min((t-last)/1000,.1):0;last=t;const landscape=innerWidth>innerHeight;if(running&&landscape&&!document.hidden){accumulator+=dt;while(accumulator>=1/120){step(p,inputs(),1/120);advanceAnimation(animation,p,1/120);time+=1/120;accumulator-=1/120;}}else accumulator=0;draw();requestAnimationFrame(loop);}
-Promise.all(['run','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name==='run'?'run-v2':name}.png`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
+Promise.all(['run','crouch','crouch-walk','jump'].map(name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{sheets[name]=im;resolve();};im.onerror=()=>reject(new Error(name));im.src=`assets/${name==='run'?'run-v2':name}.png?v=${VERSION}`;}))).then(()=>{start.disabled=false;start.textContent='Let’s play!';}).catch(()=>{start.textContent='Couldn’t load artwork. Please reload.';});
 requestAnimationFrame(loop);
